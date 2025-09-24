@@ -1,0 +1,17 @@
+defaults:
+  - dataset: cifar10
+  - train: and          # or and_autok
+  - _self_
+
+seed: 42
+output_dir: ./runs
+
+device: cuda          # "cpu" or "cuda"
+compile: true         # torch.compile if possible
+precision: 32
+
+# logging
+log:
+  tb: true
+  wandb: false
+  project: "and-2025"

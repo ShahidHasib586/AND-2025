@@ -1,0 +1,23 @@
+max_epochs: 200
+rounds: 5
+optimizer:
+  name: sgd
+  lr: 0.03
+  momentum: 0.9
+  weight_decay: 5e-4
+  nesterov: true
+lr_schedule:
+  policy: step
+  step: 40
+  gamma: 0.1
+  offset: 80
+model:
+  backbone: resnet18
+  low_dim: 128
+  projector:
+    dims: [512, 512, 128]
+loss:
+  name: and
+  npc_temperature: 0.1
+  npc_momentum: 0.5
+display_freq: 100

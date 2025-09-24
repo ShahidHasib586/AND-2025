@@ -1,0 +1,12 @@
+# Same as train/and.yaml but using a timm ViT with Identity projector
+max_epochs: 100
+rounds: 3
+optimizer: {name: sgd, lr: 0.05, momentum: 0.9, weight_decay: 5e-4, nesterov: true}
+lr_schedule: {policy: step, step: 30, gamma: 0.1, offset: 60}
+model:
+  backbone: "timm:vit_base_patch16_224"
+  low_dim: 768
+  projector:
+    dims: []   # Identity head (frozen features)
+loss: {name: and, npc_temperature: 0.1, npc_momentum: 0.5}
+display_freq: 100

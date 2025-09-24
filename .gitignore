@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+runs/
+sessions/
+site/
+.data_cache/
+/data/
+*.pth
+*.pt
+.DS_Store
+
