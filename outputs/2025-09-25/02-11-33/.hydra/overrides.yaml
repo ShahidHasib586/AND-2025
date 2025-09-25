@@ -1,0 +1,4 @@
+- mode=train
+- train=and
+- dataset=cifar10
+- seed=42

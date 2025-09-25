@@ -1,3 +1,4 @@
+mode: train
 defaults:
   - dataset: cifar10
   - train: and          # or and_autok

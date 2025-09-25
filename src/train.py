@@ -19,7 +19,12 @@ from .andx.auto_k.xmeans_gmeans import estimate_k_xmeans_like
 from .andx.auto_k.eigengap import estimate_k_eigengap
 from .andx.auto_k.dp_means import estimate_k_dpmeans
 from .andx.auto_k.stability import KStability
-
+from .andx.auto_k.stability import KStability
+from .andx.auto_k.consensus import estimate_k_consensus
+from .andx.auto_k.silhouette import estimate_k_silhouette
+from .andx.auto_k.xmeans_gmeans import estimate_k_xmeans_like
+from .andx.auto_k.eigengap import estimate_k_eigengap
+from .andx.auto_k.dp_means import estimate_k_dpmeans
 
 def make_optimizer(params, cfg):
     if cfg.name == "sgd":
