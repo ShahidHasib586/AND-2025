@@ -117,7 +117,7 @@ python -m src.hydra_main mode=eval +ckpt=runs/train/checkpoint_and_or_autok.pt
 
 ```
 
-Handy overrides
+overrides
 
 choose Auto-K method:
 
