@@ -52,9 +52,6 @@ train.model.backbone=resnet18
 
 We ship configs to mirror original hyperparams (SGD 0.03 lr, step decay, etc.). Set seed and log dirs to reproduce.
 
-## 7. License
-
-MIT
 
 
 ---
@@ -79,7 +76,7 @@ CKPT=${1:-runs/train/checkpoint_and_only.pt}
 python -m src.hydra_main mode=eval +ckpt=$CKPT
 ```
 
-## 8. How to run (quick)
+## 7. How to run (quick)
 
 ```bash
 
