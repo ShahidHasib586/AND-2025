@@ -30,5 +30,6 @@ loss:
   name: and
   npc_temperature: 0.1
   npc_momentum: 0.5
+  npc_neighbors: 5
   lambda_cluster: 1.0       # weight for clustering regularizer
 display_freq: 100

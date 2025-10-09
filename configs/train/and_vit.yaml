@@ -8,5 +8,5 @@ model:
   low_dim: 768
   projector:
     dims: []   # Identity head (frozen features)
-loss: {name: and, npc_temperature: 0.1, npc_momentum: 0.5}
+loss: {name: and, npc_temperature: 0.1, npc_momentum: 0.5, npc_neighbors: 5}
 display_freq: 100
