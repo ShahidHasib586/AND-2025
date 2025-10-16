@@ -25,7 +25,7 @@ cd AND-2025
 
 # 2. Create and activate a virtual environment
 python -m venv .venv
-source .venv/bin/activate        # Windows PowerShell: .venv\Scripts\Activate.ps1
+source .venv/bin/activate        # Windows PowerShell: .venv\Scripts\Activate.ps1 #. .venv/Scripts/activate
 #                                 # Windows Git Bash/CMD: .venv\Scripts\activate
 
 # 3. Install the package in editable mode (ensures `src/` is importable)
