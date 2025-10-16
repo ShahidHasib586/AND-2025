@@ -25,15 +25,21 @@ cd AND-2025
 
 # 2. Create and activate a virtual environment
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+source .venv/bin/activate        # Windows PowerShell: .venv\Scripts\Activate.ps1
+#                                 # Windows Git Bash/CMD: .venv\Scripts\activate
 
-# 3. Install the package
-pip install --upgrade pip
-pip install -e .                 # or: pip install -r requirements.txt
+# 3. Install the package in editable mode (ensures `src/` is importable)
+python -m pip install --upgrade pip
+python -m pip install -e .       # alternatively: python -m pip install -r requirements.txt
 
-# 4. (Optional) Install git hooks
+# 4. (Optional) Developer tooling
+python -m pip install pre-commit
 pre-commit install
 ```
+
+> **Troubleshooting:** If you see `ModuleNotFoundError: No module named 'src.andx.utils.memory'`, make sure the virtual
+> environment is activated and re-run `python -m pip install -e .`. The editable install wires the `src/` tree as a Python
+> package so the training entry point can resolve intra-project imports.
 
 ## Datasets
 The default experiments target **CIFAR-10**. When first launched, the dataset will be downloaded to `./data/cifar10`. Override the root path via Hydra:
@@ -73,6 +79,21 @@ python -m src.hydra_main \
     train.model.autok_head.sweep.step=1
 ```
 
+#### Switching Auto-K estimators
+Each estimator exposes different override knobs. The table below lists the flag to set on the command line (via Hydra) and
+notable parameters you may want to tweak:
+
+| Method name        | Override example                                                                 | Notes |
+|--------------------|-----------------------------------------------------------------------------------|-------|
+| `consensus`        | `train.model.autok_head.method=consensus train.model.autok_head.sweep.k_max=80`   | Runs multiple k-means sweeps and aggregates votes. Use `train.model.autok_head.sweep.*` to control the k range. |
+| `silhouette`       | `train.model.autok_head.method=silhouette train.model.autok_head.sweep.step=1`    | Maximises the cosine silhouette score of k-means assignments. |
+| `eigengap`         | `train.model.autok_head.method=eigengap train.model.autok_head.sweep.k_min=2`     | Selects k based on the spectral eigengap heuristic. |
+| `dpmeans`          | `train.model.autok_head.method=dpmeans`                                          | Chooses k via DP-means with the default lambda (tweak inside the source if needed). |
+| `xmeans` (G-means) | `train.model.autok_head.method=xmeans train.model.autok_head.sweep.k_max=128`     | Runs an X-means/G-means style growth heuristic over the specified sweep range. |
+
+All Auto-K heads share warm-up and update parameters that can be overridden as well, e.g. `train.model.autok_head.update_freq=2`
+or `train.model.autok_head.warmup_epochs=5`.
+
 ### Evaluate checkpoints
 ```bash
 python -m src.hydra_main mode=eval +ckpt=runs/train/checkpoint_and_only.pt
@@ -99,6 +120,30 @@ Each script simply wraps the corresponding `python -m src.hydra_main ...` comman
 
 ## Outputs & logging
 Runs are stored in `./runs/` by default. TensorBoard logs are written to `runs/*/events.out.tfevents...`. Enable Weights & Biases logging by setting `log.wandb=true` (and providing authentication via `WANDB_API_KEY`).
+
+### Visualising clustering progress
+1. **Monitor training live with TensorBoard**:
+   ```bash
+   tensorboard --logdir runs
+   ```
+   Watch the `autok/k` scalar (current estimate of the number of clusters), the `autok/q` quality proxy, and the feature histograms written at the end of every training round.
+
+2. **Inspect embeddings offline** once a checkpoint is saved:
+   ```bash
+   # Dump features for the evaluation split via the utility helper
+   python - <<'PY'
+   from omegaconf import OmegaConf
+   from src.build_features import dump_features
+
+   dataset_cfg = OmegaConf.load('configs/dataset/cifar10.yaml')
+   dump_features(
+       'runs/train/checkpoint_and_or_autok.pt',
+       'outputs/cifar10_features.pt',
+       dataset_cfg,
+   )
+   PY
+   ```
+   The resulting tensor file (`Z` for embeddings, `y` for labels) can be loaded in `noteboooks/viz_embeddings.ipynb` to project features with UMAP/t-SNE and visually inspect cluster separation. Launch Jupyter with `jupyter notebook` or open the notebook directly in VS Code.
 
 ## Testing
 Execute the unit tests and style checks locally before submitting changes:
